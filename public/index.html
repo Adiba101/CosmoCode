@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Constellation — AI-Powered Galaxy Codebase Visualizer</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Styling -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Lucide Icons -->
+    <script src="js/libs/lucide.min.js"></script>
+    <!-- Three.js and OrbitControls -->
+    <script src="js/libs/three.min.js"></script>
+    <script src="js/libs/OrbitControls.js"></script>
+</head>
+<body>
+    <div id="space-overlay"></div>
+
+    <!-- Main Container -->
+    <div id="app-container">
+        <!-- HEADER -->
+        <header class="cyber-header">
+            <div class="logo-area">
+                <i data-lucide="orbit" class="icon-pulse logo-icon"></i>
+                <div class="title-meta">
+                    <h1>CODE CONSTELLATION</h1>
+                    <span class="sub-title">AI-Powered Galaxy Codebase Visualizer</span>
+                </div>
+            </div>
+            
+            <div id="repo-stats-hud" class="repo-stats hidden">
+                <div class="stat-item" title="Stars represent Classes/Modules in your code">
+                    <span class="icon-label"><i data-lucide="star" class="color-star"></i> Stars (Classes)</span>
+                    <span id="stat-stars" class="stat-val">0</span>
+                </div>
+                <div class="stat-item" title="Planets represent Functions/Methods orbiting their classes">
+                    <span class="icon-label"><i data-lucide="circle-dot" class="color-planet"></i> Planets (Funcs)</span>
+                    <span id="stat-planets" class="stat-val">0</span>
+                </div>
+                <div class="stat-item" title="Orbital Paths represent Import/Call dependencies">
+                    <span class="icon-label"><i data-lucide="git-fork" class="color-orbit"></i> Orbits (Deps)</span>
+                    <span id="stat-orbits" class="stat-val">0</span>
+                </div>
+                <div class="stat-item" title="Black Holes represent high-risk code bugs or security vulnerabilities">
+                    <span class="icon-label"><i data-lucide="aperture" class="color-blackhole"></i> Black Holes (Bugs)</span>
+                    <span id="stat-blackholes" class="stat-val">0</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button id="btn-re-upload" class="cyber-button-sm">
+                    <i data-lucide="upload-cloud"></i> Load New Repo
+                </button>
+                <div class="iq-badge">
+                    <span class="pulse-green"></span>
+                    <span id="fabric-iq-status">Fabric IQ Connected</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN VIEWPORT (ThreeJS Canvas) -->
+        <main id="viewport-container">
+            <canvas id="galaxy-canvas"></canvas>
+            <div id="canvas-loading" class="hidden">
+            </div>
+            
+            <!-- Floating Navigation Helpers -->
+            <div class="viewport-hud-controls">
+                <button id="hud-btn-reset-cam" title="Reset Camera"><i data-lucide="refresh-cw"></i></button>
+                <button id="hud-btn-toggle-labels" title="Toggle Name Labels"><i data-lucide="tag"></i></button>
+                <button id="hud-btn-play-tour" title="Start Cinematic Tour"><i data-lucide="play"></i> Tour</button>
+            </div>
+        </main>
+
+        <!-- SIDEBAR LEFT: Fabric IQ Query & Search -->
+        <aside id="sidebar-left" class="glass-panel panel-left hidden">
+            <div class="panel-section">
+                <h2><i data-lucide="brain"></i> Fabric IQ Query Console</h2>
+                <p class="section-desc">Search your code using semantic logic or natural queries.</p>
+                
+                <div class="search-box">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input type="text" id="node-search-input" placeholder="Search class or function name...">
+                </div>
+
+                <div class="natural-query-area">
+                    <label for="query-input">Query Fabric Knowledge Graph:</label>
+                    <div class="query-bar">
+                        <input type="text" id="query-input" placeholder="e.g. complexity > 15, coverage < 50">
+                        <button id="btn-run-query" class="cyber-button"><i data-lucide="play-circle"></i></button>
+                    </div>
+                    <div class="query-suggestions">
+                        <span class="suggestion-chip">complexity > 10</span>
+                        <span class="suggestion-chip">coverage < 40</span>
+                        <span class="suggestion-chip">type = blackhole</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section flex-grow">
+                <h2><i data-lucide="layers"></i> Code Entities</h2>
+                <div id="search-results-list" class="entity-list scrollable">
+                    <!-- Populated dynamically -->
+                    <div class="empty-placeholder">
+                        <i data-lucide="folder-tree"></i>
+                        <p>No repository loaded.</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- SIDEBAR RIGHT: Foundry IQ Recommendations -->
+        <aside id="sidebar-right" class="glass-panel panel-right hidden">
+            <div class="panel-section">
+                <h2><i data-lucide="sparkles"></i> Foundry IQ Recommendations</h2>
+                <p class="section-desc">Ranked risk mitigations and architectural refactoring suggestions, grounded in AST evidence.</p>
+            </div>
+            
+            <div id="recommendations-container" class="scrollable">
+                <!-- Populated dynamically -->
+                <div class="empty-placeholder">
+                    <i data-lucide="shield-check"></i>
+                    <p>Load a codebase to analyze vulnerabilities.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- BOTTOM PANEL: Detailed Inspector & Work IQ -->
+        <footer id="inspector-panel" class="glass-panel panel-bottom hidden">
+            <button id="close-inspector-btn" class="close-btn">&times;</button>
+            <div class="inspector-grid">
+                
+                <!-- Entity Info -->
+                <div class="inspector-col main-meta">
+                    <div class="entity-badge" id="inspect-type">Star</div>
+                    <h3 id="inspect-name">ClassSelector</h3>
+                    <div class="inspect-path" id="inspect-path">src/app/ClassSelector.py</div>
+                    
+                    <div class="grid-2x2">
+                        <div class="metric-card">
+                            <span class="label">Lines of Code</span>
+                            <span class="value" id="inspect-loc">142</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="label">Complexity</span>
+                            <span class="value" id="inspect-complexity">8</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="label">Test Coverage</span>
+                            <span class="value" id="inspect-coverage">75%</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="label">Language</span>
+                            <span class="value" id="inspect-lang">Python</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grounded Citations (Foundry IQ) & Code Snippet -->
+                <div class="inspector-col code-snippet-area">
+                    <h4><i data-lucide="code"></i> Grounded Source Code (Foundry IQ)</h4>
+                    <pre><code id="inspect-code-block" class="language-code"># Click a star or planet to inspect source file</code></pre>
+                </div>
+
+                <!-- Work IQ Context -->
+                <div class="inspector-col work-context-area">
+                    <h4><i data-lucide="users"></i> Work IQ Team Signals</h4>
+                    <div class="work-stats">
+                        <div><strong>Owner:</strong> <span id="inspect-owner">Sarah Chen</span></div>
+                        <div><strong>Commits:</strong> <span id="inspect-commits">14 commits</span></div>
+                        <div><strong>Last Mod:</strong> <span id="inspect-modified">3 days ago</span></div>
+                    </div>
+                    <div class="teams-chat-log">
+                        <h5><i data-lucide="message-square"></i> Teams Chat mentions</h5>
+                        <div id="inspect-teams-messages" class="teams-messages-container">
+                            <div class="teams-message">
+                                <span class="sender">Sarah Chen</span>: <em>Checking in changes...</em>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </footer>
+
+        <!-- INGESTION DIALOG OVERLAY -->
+        <div id="ingestion-overlay" class="modal-overlay">
+            <div class="modal-box glass-panel">
+                <div class="logo-large">
+                    <i data-lucide="orbit" class="logo-icon-spinning"></i>
+                    <h2>CODE CONSTELLATION</h2>
+                    <p>Enter the Universe of Your Codebase</p>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="tab-demo"><i data-lucide="toy-brick"></i> Quick Demo</button>
+                    <button class="tab-btn" data-tab="tab-local"><i data-lucide="folder-open"></i> Upload Local Folder</button>
+                    <button class="tab-btn" data-tab="tab-github"><i data-lucide="github"></i> Parse GitHub Repo</button>
+                </div>
+
+                <!-- Tab: Quick Demo -->
+                <div class="tab-content active" id="tab-demo">
+                    <p class="tab-description">Instantly load pre-cached standard repositories representing different system architectures.</p>
+                    <div class="demo-grid">
+                        <button class="demo-repo-card" data-repo="react_galaxy">
+                            <h3>React Web Dashboard</h3>
+                            <p>3 Stars, 8 Planets, 3 Orbits, 2 Black Holes</p>
+                            <span class="language-tag react">TypeScript</span>
+                        </button>
+                        <button class="demo-repo-card" data-repo="python_galaxy">
+                            <h3>FastAPI AI Agent Routing</h3>
+                            <p>4 Stars, 6 Planets, 3 Orbits, 3 Black Holes</p>
+                            <span class="language-tag python">Python</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab: Local Folder -->
+                <div class="tab-content" id="tab-local">
+                    <p class="tab-description">Upload a folder from your local disk. Files are parsed securely and entirely inside your browser!</p>
+                    <div class="drag-drop-area" id="drag-drop-zone">
+                        <i data-lucide="upload-cloud" class="upload-icon"></i>
+                        <p>Drag & Drop Folder or Click to Select</p>
+                        <input type="file" id="local-folder-input" webkitdirectory directory multiple class="hidden-input">
+                        <button class="cyber-button" onclick="document.getElementById('local-folder-input').click()">Browse Folders</button>
+                    </div>
+                </div>
+
+                <!-- Tab: GitHub -->
+                <div class="tab-content" id="tab-github">
+                    <p class="tab-description">Analyze any public repository directly from GitHub. Enter the repository URL below.</p>
+                    <div class="github-form">
+                        <input type="text" id="github-url-input" placeholder="e.g. https://github.com/fastapi/fastapi">
+                        <button id="btn-submit-github" class="cyber-button">Ingest Repository</button>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <p><i data-lucide="shield-alert"></i> No code is sent to external servers. All processing is local.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- HEALTH DASHBOARD OVERLAY (Toggled via Mission Control Badge) -->
+        <div id="dashboard-overlay" class="dashboard-overlay hidden">
+            <div class="dashboard-container glass-panel">
+                <button id="close-dashboard-btn" class="close-btn">&times;</button>
+                <h2><i data-lucide="gauge"></i> Mission Control — Codebase Health Dashboard</h2>
+                
+                <div class="dashboard-grid">
+                    <!-- Gauge 1: Health Score -->
+                    <div class="gauge-card">
+                        <h3>Codebase Health</h3>
+                        <div class="circular-progress">
+                            <svg class="progress-ring" width="120" height="120">
+                                <circle class="progress-ring-bg" stroke="#1d2030" stroke-width="8" fill="transparent" r="50" cx="60" cy="60"/>
+                                <circle id="health-score-ring" class="progress-ring-bar" stroke="#00ff88" stroke-width="8" stroke-dasharray="314.16" stroke-dashoffset="314.16" fill="transparent" r="50" cx="60" cy="60"/>
+                            </svg>
+                            <div class="progress-text" id="hud-health-score">0</div>
+                        </div>
+                        <p class="metric-desc">Based on cyclomatic complexity, test coverage, and security annotations.</p>
+                    </div>
+
+                    <!-- Gauge 2: Semantic Risk Map -->
+                    <div class="gauge-card">
+                        <h3>Semantic Risk Index</h3>
+                        <div class="metric-display">
+                            <span id="hud-risk-index" class="text-amber">LOW</span>
+                            <span class="sub-value" id="hud-risk-count">0 warnings</span>
+                        </div>
+                        <p class="metric-desc">Fabric IQ risk-entity density mapping clusters of low-coverage / high-complexity nodes.</p>
+                    </div>
+
+                    <!-- Gauge 3: Dependency Depth -->
+                    <div class="gauge-card">
+                        <h3>Dependency Depth</h3>
+                        <div class="metric-display">
+                            <span id="hud-dep-depth">0.0</span>
+                            <span class="sub-value">circular imports: <span id="hud-circular-count">0</span></span>
+                        </div>
+                        <p class="metric-desc">Measures the blast radius of changes. Deeper dependency trees increase change fragility.</p>
+                    </div>
+
+                    <!-- Gauge 4: Coverage Constellation -->
+                    <div class="gauge-card">
+                        <h3>Coverage Constellation</h3>
+                        <div class="metric-display">
+                            <span id="hud-coverage-percent">0%</span>
+                            <span class="sub-value">tested units</span>
+                        </div>
+                        <p class="metric-desc">The percentage of galaxy stars emitting solid green test coverage light.</p>
+                    </div>
+
+                    <!-- Gauge 5: Team Engagement -->
+                    <div class="gauge-card">
+                        <h3>Team Engagement Pulse</h3>
+                        <div class="metric-display">
+                            <span id="hud-team-engagement">0.0</span>
+                            <span class="sub-value">pulses/min</span>
+                        </div>
+                        <p class="metric-desc">Work IQ check-ins, PR approvals, and active Teams discussions index.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Dashboard Toggle Button -->
+        <button id="btn-toggle-dashboard" class="cyber-button hud-dashboard-toggle">
+            <i data-lucide="line-chart"></i> Mission Control Dashboard
+        </button>
+    </div>
+
+    <!-- Application Javascript Files -->
+    <script src="js/parser.js"></script>
+    <script src="js/mockData.js"></script>
+    <script src="js/galaxy.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Initialize Lucide Icons after DOM load
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
