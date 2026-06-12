@@ -1,5 +1,5 @@
 /**
- * Code Constellation 3D Galaxy Renderer (Three.js)
+ * COSMOCODE 3D Galaxy Renderer (Three.js)
  */
 class GalaxyRenderer {
     constructor(canvasId, onNodeSelected) {

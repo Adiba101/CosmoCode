@@ -1,6 +1,6 @@
 @echo off
 echo ===================================================
-echo   CODE CONSTELLATION - Starting AI Galaxy Visualizer
+echo   COSMO CODE  - Starting AI Galaxy Visualizer
 echo ===================================================
 echo.
 echo Launching default web browser at http://localhost:8000...

@@ -12,7 +12,7 @@ class BrowserCodeParser {
         const risks = [];
         
         // 1. Security Check: Hardcoded Secrets
-        const secretRegex = /\b(secret|password|passwd|token|api_key|private_key)\s*=\s*['"][^'"]{4,}['"]/gi;
+        const secretRegex = /\b(secret|password|passwd|token|api_key|private_key|credential|secret_key)\s*=\s*['"][^'"]{4,}['"]/gi;
         let match;
         while ((match = secretRegex.exec(content)) !== null) {
             const lineNo = content.substring(0, match.index).split('\n').length;
@@ -22,12 +22,13 @@ class BrowserCodeParser {
                 message: "Potential hardcoded credential or secret key detected.",
                 line: lineNo,
                 snippet: match[0],
-                owaspRef: "OWASP A02:2021-Cryptographic Failures"
+                owaspRef: "OWASP A02:2021-Cryptographic Failures",
+                remediation: "Remove hardcoded secrets and load sensitive values from secure configuration or environment variables."
             });
         }
 
         // 2. Security Check: eval/exec injection risk
-        const dangerousRegex = /\b(eval|exec|unsafe|dangerouslySetInnerHTML)\b/g;
+        const dangerousRegex = /\b(eval|exec|unsafe|dangerouslySetInnerHTML|new Function|Function\()\b/g;
         while ((match = dangerousRegex.exec(content)) !== null) {
             const lineNo = content.substring(0, match.index).split('\n').length;
             const lines = content.split('\n');
@@ -37,11 +38,44 @@ class BrowserCodeParser {
                 message: `Dangerous operation '${match[1]}' used, exposing injection vulnerabilities.`,
                 line: lineNo,
                 snippet: lines[lineNo - 1]?.trim() || "",
-                owaspRef: "OWASP A03:2021-Injection"
+                owaspRef: "OWASP A03:2021-Injection",
+                remediation: "Avoid dynamic code execution and use safe, explicit APIs instead."
             });
         }
 
-        // 3. Modularity Smell: God file
+        // 3. Security Check: String concatenation in executable calls
+        const injectionRegex = /\b(exec|query|execute|system|popen)\b[\s\S]{0,40}(['\"]\s*[+\-\|])/gi;
+        while ((match = injectionRegex.exec(content)) !== null) {
+            const lineNo = content.substring(0, match.index).split('\n').length;
+            const lines = content.split('\n');
+            risks.push({
+                category: "SECURITY",
+                severity: "HIGH",
+                message: "Possible injection risk from string concatenation in command or query execution.",
+                line: lineNo,
+                snippet: lines[lineNo - 1]?.trim() || match[0],
+                owaspRef: "OWASP A03:2021-Injection",
+                remediation: "Use parameterized queries or sanitized input APIs instead of constructing commands from raw strings."
+            });
+        }
+
+        // 4. Security Check: Path traversal or unsafe file access
+        const traversalRegex = /\b(open|read|write|load|save|mkdir|rmdir|remove|unlink)\b\s*\([^\)]*(\.\.|\/\.|\\\.\\)[^\)]*\)/gi;
+        while ((match = traversalRegex.exec(content)) !== null) {
+            const lineNo = content.substring(0, match.index).split('\n').length;
+            const lines = content.split('\n');
+            risks.push({
+                category: "SECURITY",
+                severity: "MEDIUM",
+                message: "Potential path traversal or unsafe file access detected.",
+                line: lineNo,
+                snippet: lines[lineNo - 1]?.trim() || match[0],
+                owaspRef: "OWASP A01:2021-Broken Access Control",
+                remediation: "Validate and sanitize file paths before opening or writing files. Do not use unchecked relative path fragments."
+            });
+        }
+
+        // 5. Modularity Smell: God file
         const lines = content.split('\n');
         if (lines.length > 250) {
             risks.push({
@@ -50,11 +84,12 @@ class BrowserCodeParser {
                 message: `God File Smell: File contains ${lines.length} lines, violating modularity patterns.`,
                 line: 1,
                 snippet: lines[0] || "",
-                owaspRef: "Clean Code: Single Responsibility Principle"
+                owaspRef: "Clean Code: Single Responsibility Principle",
+                remediation: "Split large files into focused modules or components."
             });
         }
 
-        // 4. Performance/Error handling check: empty catch blocks
+        // 6. Performance/Error handling check: empty catch blocks
         const catchRegex = /(except\b.*:|catch\s*\(.*\)\s*\{)\s*(\bpass\b|\bcontinue\b|\{\}|\s*\}|\s*\/\/\s*.*)/g;
         while ((match = catchRegex.exec(content)) !== null) {
             const lineNo = content.substring(0, match.index).split('\n').length;
@@ -64,7 +99,8 @@ class BrowserCodeParser {
                 message: "Silent Failure: Empty catch/except block swallows errors, preventing debugging.",
                 line: lineNo,
                 snippet: match[0].trim().replace(/\n/g, ' '),
-                owaspRef: "OWASP A09:2021-Security Logging failures"
+                owaspRef: "OWASP A09:2021-Security Logging and Monitoring Failures",
+                remediation: "Handle exceptions explicitly or log errors before swallowing them."
             });
         }
 
@@ -255,6 +291,74 @@ class BrowserCodeParser {
         return metrics;
     }
 
+    static detectCircularDependencies(edges) {
+        const graph = {};
+        edges.forEach(edge => {
+            if (edge.type !== 'dependency') return;
+            if (!graph[edge.source]) graph[edge.source] = [];
+            graph[edge.source].push(edge.target);
+        });
+
+        const states = {};
+        let cyclesFound = 0;
+
+        function visit(node) {
+            if (states[node] === 1) {
+                cyclesFound += 1;
+                return true;
+            }
+            if (states[node] === 2) return false;
+
+            states[node] = 1;
+            const neighbors = graph[node] || [];
+            neighbors.forEach(neighbor => visit(neighbor));
+            states[node] = 2;
+            return false;
+        }
+
+        Object.keys(graph).forEach(node => {
+            if (!states[node]) visit(node);
+        });
+
+        return Math.min(cyclesFound, 10);
+    }
+
+    static calculateDependencyDepth(edges, nodes) {
+        const graph = {};
+        const inDegree = {};
+        nodes.forEach(node => {
+            graph[node.id] = [];
+            inDegree[node.id] = 0;
+        });
+
+        edges.forEach(edge => {
+            if (edge.type !== 'dependency') return;
+            graph[edge.source] = graph[edge.source] || [];
+            graph[edge.source].push(edge.target);
+            inDegree[edge.target] = (inDegree[edge.target] || 0) + 1;
+        });
+
+        let roots = Object.keys(graph).filter(id => !inDegree[id]);
+        if (roots.length === 0) roots = Object.keys(graph);
+        if (roots.length === 0) return 0;
+
+        let maxDepth = 0;
+
+        function dfs(node, depth, visited) {
+            maxDepth = Math.max(maxDepth, depth);
+            const neighbors = graph[node] || [];
+            neighbors.forEach(next => {
+                if (visited.has(next)) return;
+                visited.add(next);
+                dfs(next, depth + 1, visited);
+                visited.delete(next);
+            });
+        }
+
+        roots.forEach(root => dfs(root, 1, new Set([root])));
+        return maxDepth;
+    }
+
     static buildGalaxyGraph(filesData) {
         const nodes = [];
         const edges = [];
@@ -265,7 +369,10 @@ class BrowserCodeParser {
             blackholes: 0,
             loc: 0,
             avgCoverage: 0,
-            avgComplexity: 0
+            avgComplexity: 0,
+            dependencyDepth: 0,
+            circularImports: 0,
+            codebaseHealth: 0
         };
 
         const nodeMap = {};
@@ -402,6 +509,13 @@ class BrowserCodeParser {
             summary.avgCoverage = Math.round((totalCoverage / validFilesCount) * 10) / 10;
             summary.avgComplexity = Math.round((totalComplexity / validFilesCount) * 10) / 10;
         }
+
+        summary.dependencyDepth = this.calculateDependencyDepth(edges, nodes);
+        summary.circularImports = this.detectCircularDependencies(edges);
+        const bugPenalty = summary.blackholes * 12;
+        const complexityPenalty = summary.avgComplexity * 1.5;
+        const coverageBonus = (summary.avgCoverage - 50) * 0.1;
+        summary.codebaseHealth = Math.max(0, Math.min(100, Math.round(100 - bugPenalty - complexityPenalty + coverageBonus)));
 
         return {
             summary,

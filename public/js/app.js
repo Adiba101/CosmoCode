@@ -1,5 +1,5 @@
 /**
- * Code Constellation App Orchestrator
+ * COSMOCODE App Orchestrator
  */
 document.addEventListener("DOMContentLoaded", () => {
   // DOM Elements
@@ -489,11 +489,22 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // UPDATE MISSION CONTROL GAUGES
   function updateDashboardGauges(summary) {
+    const safeSummary = {
+      stars: summary.stars || 0,
+      planets: summary.planets || 0,
+      orbits: summary.orbits || 0,
+      blackholes: summary.blackholes || 0,
+      avgCoverage: typeof summary.avgCoverage === 'number' ? summary.avgCoverage : 0,
+      avgComplexity: typeof summary.avgComplexity === 'number' ? summary.avgComplexity : 0,
+      dependencyDepth: typeof summary.dependencyDepth === 'number' ? summary.dependencyDepth : 0,
+      circularImports: typeof summary.circularImports === 'number' ? summary.circularImports : 0
+    };
+
     // 1. Health Score Calculation
     // Base 100, minus penalties for complexity and bugs, plus coverage bonus
-    const bugPenalty = summary.blackholes * 12;
-    const complexityPenalty = summary.avgComplexity * 1.5;
-    const coverageBonus = (summary.avgCoverage - 50) * 0.1;
+    const bugPenalty = safeSummary.blackholes * 12;
+    const complexityPenalty = safeSummary.avgComplexity * 1.5;
+    const coverageBonus = (safeSummary.avgCoverage - 50) * 0.1;
     const healthScore = Math.max(0, Math.min(100, Math.round(100 - bugPenalty - complexityPenalty + coverageBonus)));
     
     document.getElementById("hud-health-score").textContent = healthScore;
@@ -529,16 +540,16 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("hud-risk-count").textContent = `${riskVal} bugs detected`;
     
     // 3. Dependency Depth
-    const depth = summary.dependencyDepth !== undefined ? summary.dependencyDepth.toFixed(1) : "0.0";
-    const circularCount = summary.circularImports !== undefined ? summary.circularImports : 0;
+    const depth = safeSummary.dependencyDepth.toFixed(1);
+    const circularCount = safeSummary.circularImports;
     document.getElementById("hud-dep-depth").textContent = depth;
     document.getElementById("hud-circular-count").textContent = circularCount;
     
-    // 4. Coverage Constellation
-    document.getElementById("hud-coverage-percent").textContent = `${summary.avgCoverage}%`;
+    // 4. Coverage COSMOCODE
+    document.getElementById("hud-coverage-percent").textContent = `${safeSummary.avgCoverage}%`;
     
     // 5. Team Engagement
-    const teamPulse = (0.5 + (summary.stars * 0.1) + (summary.orbits * 0.1)).toFixed(1);
+    const teamPulse = (0.5 + (safeSummary.stars * 0.1) + (safeSummary.orbits * 0.1)).toFixed(1);
     document.getElementById("hud-team-engagement").textContent = teamPulse;
   }
   
