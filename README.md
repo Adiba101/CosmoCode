@@ -105,69 +105,19 @@ Supported Languages:
 
 ---
 
-## 🏗️ Architecture & Workflow
 
+## 🌌 CosmoCode Architecture
 
-ARCHITECTURE
-
-┌─────────────────────────────────────┐
-│            Developer                │
-│  Writes, reviews, and improves code │
-└─────────────────┬───────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────┐
-│          GitHub Copilot             │
-│  • Code Suggestions                 │
-│  • Function Generation              │
-│  • Documentation Assistance         │
-│  • Bug Detection Support            │
-└─────────────────┬───────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────┐
-│          Source Code Base           │
-│ Python Files • Classes • Functions  │
-│ Modules • Dependencies              │
-└─────────────────┬───────────────────┘
-                  │
-                  ▼
-┌─────────────────────────────────────────────────────┐
-│                      CosmoCode                      │
-│                                                     │
-│  ┌─────────────────────────────────────────────┐   │
-│  │ Repository Analyzer                         │   │
-│  │ • Scans GitHub repositories                 │   │
-│  │ • Extracts project structure                │   │
-│  └──────────────────┬──────────────────────────┘   │
-│                     │                              │
-│  ┌──────────────────▼──────────────────────────┐   │
-│  │ Dependency Mapper                           │   │
-│  │ • Tracks imports and relationships          │   │
-│  │ • Builds dependency graph                   │   │
-│  └──────────────────┬──────────────────────────┘   │
-│                     │                              │
-│  ┌──────────────────▼──────────────────────────┐   │
-│  │ Code Constellation Engine                   │   │
-│  │ • Creates interactive visualizations        │   │
-│  │ • Maps classes and functions                │   │
-│  └──────────────────┬──────────────────────────┘   │
-│                     │                              │
-│  ┌──────────────────▼──────────────────────────┐   │
-│  │ Bug Detection Module                        │   │
-│  │ • Identifies potential issues               │   │
-│  │ • Highlights risky code paths               │   │
-│  └──────────────────┬──────────────────────────┘   │
-└─────────────────────┼──────────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────┐
-│         Visualization UI            │
-│  • Constellation View               │
-│  • Dependency Graph                 │
-│  • Function Explorer                │
-│  • Bug Highlighting                 │
-└─────────────────────────────────────┘
+| Stage | Module | Function |
+|---------|---------|----------|
+| 1 | 👨‍💻 Developer | Writes and maintains source code |
+| 2 | 🤖 GitHub Copilot | Assists with coding, documentation, and debugging |
+| 3 | 📂 Source Code Base | Stores classes, functions, modules, and dependencies |
+| 4 | 🔍 Repository Analyzer | Extracts repository structure and metadata |
+| 5 | 🕸️ Dependency Mapper | Builds dependency relationships between files |
+| 6 | 🌌 Code Constellation Engine | Generates constellation-based visualizations |
+| 7 | 🐞 Bug Detection Module | Detects potential issues and risky code paths |
+| 8 | 📊 Visualization UI | Presents interactive graphs and insights |
 
 CosmoCode follows a modular AI-powered architecture that combines advanced language models, intelligent tool integration, and GitHub-assisted development to deliver accurate, context-aware responses for astronomy and coding-related queries.
 
@@ -208,11 +158,22 @@ CosmoCode follows a modular AI-powered architecture that combines advanced langu
    * Processed results are formatted into user-friendly outputs.
    * Responses may include explanations, generated code, insights, recommendations, or educational content.
 
-### Workflow
+### 🔄 Workflow
 
-User Query → CosmoCode Interface → AI Processing Engine → Tool Integration & Gemini AI → Response Generation → User Output
+| Step | Process | Output |
+|------|----------|---------|
+| 1 | User provides a GitHub repository URL | Repository selected for analysis |
+| 2 | Repository Analyzer scans the repository | Project structure extracted |
+| 3 | Dependency Mapper processes imports and relationships | Dependency graph generated |
+| 4 | Code Constellation Engine analyzes code elements | Classes and functions mapped |
+| 5 | Bug Detection Module inspects source code | Potential issues identified |
+| 6 | Visualization Engine generates interactive views | Constellation and graph data created |
+| 7 | UI renders visualizations and insights | Interactive exploration experience |
+| 8 | User explores code structure and detected issues | Better understanding of the repository |
+
 
 Development Workflow:
+
 GitHub Copilot → Code Generation & Assistance → Application Development → GitHub Repository → Deployment & Maintenance
 
 ### Technologies Used
