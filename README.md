@@ -529,6 +529,6 @@ Free to use, modify, and distribute.
 
 ---
 
-# 🌌 Every codebase is a galaxy waiting to be explored. 🌌
+#🌌 Every codebase is a galaxy waiting to be explored.🌌
 
-This version will render cleanly on GitHub with proper sections, tables, spacing, and code blocks.
+
