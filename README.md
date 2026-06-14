@@ -89,6 +89,139 @@ Supported Languages:
 
 ---
 
+## 🏗️ Architecture & Workflow
+
+
+ARCHITECTURE
+
+┌─────────────────────────────────────┐
+│            Developer                │
+│  Writes, reviews, and improves code │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│          GitHub Copilot             │
+│  • Code Suggestions                 │
+│  • Function Generation              │
+│  • Documentation Assistance         │
+│  • Bug Detection Support            │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────┐
+│          Source Code Base           │
+│ Python Files • Classes • Functions  │
+│ Modules • Dependencies              │
+└─────────────────┬───────────────────┘
+                  │
+                  ▼
+┌─────────────────────────────────────────────────────┐
+│                      CosmoCode                      │
+│                                                     │
+│  ┌─────────────────────────────────────────────┐   │
+│  │ Repository Analyzer                         │   │
+│  │ • Scans GitHub repositories                 │   │
+│  │ • Extracts project structure                │   │
+│  └──────────────────┬──────────────────────────┘   │
+│                     │                              │
+│  ┌──────────────────▼──────────────────────────┐   │
+│  │ Dependency Mapper                           │   │
+│  │ • Tracks imports and relationships          │   │
+│  │ • Builds dependency graph                   │   │
+│  └──────────────────┬──────────────────────────┘   │
+│                     │                              │
+│  ┌──────────────────▼──────────────────────────┐   │
+│  │ Code Constellation Engine                   │   │
+│  │ • Creates interactive visualizations        │   │
+│  │ • Maps classes and functions                │   │
+│  └──────────────────┬──────────────────────────┘   │
+│                     │                              │
+│  ┌──────────────────▼──────────────────────────┐   │
+│  │ Bug Detection Module                        │   │
+│  │ • Identifies potential issues               │   │
+│  │ • Highlights risky code paths               │   │
+│  └──────────────────┬──────────────────────────┘   │
+└─────────────────────┼──────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────┐
+│         Visualization UI            │
+│  • Constellation View               │
+│  • Dependency Graph                 │
+│  • Function Explorer                │
+│  • Bug Highlighting                 │
+└─────────────────────────────────────┘
+
+CosmoCode follows a modular AI-powered architecture that combines advanced language models, intelligent tool integration, and GitHub-assisted development to deliver accurate, context-aware responses for astronomy and coding-related queries.
+
+### Architecture Flow
+
+1. **User Interaction Layer**
+
+   * Users submit questions, prompts, or coding requests through the CosmoCode interface.
+   * The system captures and preprocesses user input for efficient handling.
+
+2. **AI Processing Engine**
+
+   * The core engine analyzes the query, identifies intent, and determines the required actions.
+   * Context management and prompt orchestration ensure relevant and coherent responses.
+
+3. **Tool Integration Layer**
+
+   * External tools and services are invoked when necessary to retrieve data, perform calculations, or enhance response quality.
+   * Tool-calling capabilities allow CosmoCode to extend beyond simple text generation.
+
+4. **LLM Intelligence Layer**
+
+   * Gemini AI powers natural language understanding, reasoning, and response generation.
+   * The model processes user requests and synthesizes information into meaningful outputs.
+
+5. **GitHub Copilot Development Layer**
+
+   * GitHub Copilot assists during development by generating code suggestions, accelerating feature implementation, improving productivity, and helping maintain code quality.
+   * Copilot was used for code completion, debugging assistance, documentation support, and rapid prototyping.
+
+6. **GitHub Repository & Version Control**
+
+   * Source code, documentation, architecture diagrams, and project assets are maintained through GitHub.
+   * Version control ensures collaboration, traceability, and continuous improvement.
+
+7. **Response Generation Layer**
+
+   * Processed results are formatted into user-friendly outputs.
+   * Responses may include explanations, generated code, insights, recommendations, or educational content.
+
+### Workflow
+
+User Query → CosmoCode Interface → AI Processing Engine → Tool Integration & Gemini AI → Response Generation → User Output
+
+Development Workflow:
+GitHub Copilot → Code Generation & Assistance → Application Development → GitHub Repository → Deployment & Maintenance
+
+### Technologies Used
+
+* Gemini AI
+* Python
+* GitHub Copilot
+* GitHub
+* Tool Calling Framework
+* Prompt Engineering
+* REST APIs
+* Version Control Systems
+
+### Key Features
+
+* Intelligent Query Understanding
+* AI-Powered Response Generation
+* Tool Calling Functionality
+* GitHub Copilot Assisted Development
+* Modular Architecture
+* Scalable Design
+* Context-Aware Interactions
+* Efficient Workflow Automation
+
+
 # ☄️ Celestial Visual Mapping
 
 | Visual Element  | Mapping                                               |
