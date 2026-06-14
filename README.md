@@ -48,6 +48,22 @@ http://localhost:8000
 
 ---
 
+# 🎯 Problem Statement
+
+Modern software projects often contain thousands of files, multiple modules, and complex dependency structures. Understanding how different components interact can be challenging, especially for:
+
+👩‍💻 New contributors joining a project
+🏢 Development teams working on large codebases
+📚 Students learning software architecture
+🔍 Developers performing maintenance and debugging
+
+Traditional file explorers and repository views provide limited insight into the overall structure of a project. Developers often spend significant time navigating directories and tracing dependencies manually.
+
+CosmoCode solves this problem by providing an interactive, visual, and AI-enhanced representation of software repositories.
+---
+
+---
+
 # 🌟 Features
 
 ## 🪐 Galaxy Graph Visualization
