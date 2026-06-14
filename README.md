@@ -2,7 +2,7 @@
 
 🌌 COSMOCODE — Explore Your Codebase as a Galaxy
 
-An AI-powered code analyzer that turns your source code into an interactive 3D galaxy
+An AI-powered code analyzer that turns your source code into an interactive 3D gala
 
 Built with Python · Tornado · Three.js
 
