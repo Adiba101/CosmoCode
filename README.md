@@ -10,6 +10,12 @@
 
 ---
 
+## 🏆 Hackathon Track
+
+**Track:** Creative Apps  
+**Hackathon:** Agents League Hackathon 2026
+
+
 # ✨ Overview
 
 COSMOCODE takes any codebase — uploaded locally or pulled directly from GitHub — and transforms it into a navigable **3D galaxy visualization**.
