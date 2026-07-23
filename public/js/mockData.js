@@ -13,7 +13,8 @@ const MOCK_REPOS = {
         "blackholes": 2,
         "loc": 320,
         "avgCoverage": 65.5,
-        "avgComplexity": 4.8
+        "avgComplexity": 4.8,
+        "codebaseHealth": 70
       },
       "nodes": [
         // Star 1

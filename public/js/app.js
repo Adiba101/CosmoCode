@@ -500,13 +500,14 @@ document.addEventListener("DOMContentLoaded", () => {
       circularImports: typeof summary.circularImports === 'number' ? summary.circularImports : 0
     };
 
-    // 1. Health Score Calculation
-    // Base 100, minus penalties for complexity and bugs, plus coverage bonus
-    const bugPenalty = safeSummary.blackholes * 12;
-    const complexityPenalty = safeSummary.avgComplexity * 1.5;
-    const coverageBonus = (safeSummary.avgCoverage - 50) * 0.1;
-    const healthScore = Math.max(0, Math.min(100, Math.round(100 - bugPenalty - complexityPenalty + coverageBonus)));
-    
+    const computedHealth = (() => {
+      const bugPenalty = safeSummary.blackholes * 12;
+      const complexityPenalty = safeSummary.avgComplexity * 1.5;
+      const coverageBonus = (safeSummary.avgCoverage - 50) * 0.1;
+      return Math.max(0, Math.min(100, Math.round(100 - bugPenalty - complexityPenalty + coverageBonus)));
+    })();
+
+    const healthScore = Number.isFinite(summary.codebaseHealth) ? summary.codebaseHealth : computedHealth;
     document.getElementById("hud-health-score").textContent = healthScore;
     
     // Animate radial ring progress
