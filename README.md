@@ -33,6 +33,9 @@ This allows developers to:
 Additionally, COSMOCODE introduces **WorkIQ**, a layer that simulates team activity and commit intelligence to add organizational context to the visualization.
 
 ---
+# Deployed link
+https://cosmocode-vua1.onrender.com/
+
 
 # 🌠 Demo
 
