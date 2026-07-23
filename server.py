@@ -19,11 +19,16 @@ def make_app():
 
 if __name__ == "__main__":
     app = make_app()
-    print(f"COSMOCODE Server starting on http://localhost:{PORT}")
-    app.listen(PORT)
+
+    # Render provides the port through the PORT environment variable
+    port = int(os.environ.get("PORT", PORT))
+
+    print(f"COSMOCODE Server starting on port {port}")
+
+    app.listen(port)
+
     try:
         tornado.ioloop.IOLoop.current().start()
     except KeyboardInterrupt:
         print("\nShutting down COSMOCODE Server...")
         sys.exit(0)
-# Modularized server - see config.py, core/, and handlers/ for implementation
